@@ -6,6 +6,7 @@ import xgboost as xgb
 from lightgbm import LGBMClassifier
 import tensorflow as tf
 from tensorflow import keras
+from keras.models import Sequential
 from keras.layers import SimpleRNN as RNN, LSTM, GRU, Dropout, Dense
 import pandas as pd
 import warnings
@@ -88,6 +89,28 @@ gru = tf.keras.models.Sequential([
 #rnn.compile(optimizer="adam", loss="mse", metrics=["accuracy"]) # each model must be compiled after is declared
 #rnn.fit(input_data, target_data, batch_size=batch_size)
 #rnn.predict(input_data)
+
+""" 
+We can also use this
+
+def RNN(hidden_units, input_shape):
+    model = Sequential()
+    model.add(RNN(hidden_units, input_shape=input_shape, return_sequences=True))
+    model.add(RNN(hidden_units, input_shape=input_shape, return_sequences=True))
+    model.add(RNN(hidden_units, input_shape=input_shape, return_sequences=True))
+
+    model.compile(loss='mean_squared_error', optimizer='adam')
+
+    return model
+
+
+rnn = RNN(hidden_units=3, input_shape=(time_steps,1))
+rnn.fit(trainX, trainY, epochs=20, batch_size=1, verbose=2)
+train_predict = rnn.predict(trainX)
+test_predict = rnn.predict(testX)
+
+
+"""
 
 
 
