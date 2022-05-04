@@ -53,10 +53,10 @@ light_gbm = LGBMClassifier(n_estimators=50, reg_alpha=0.01, reg_lambda=0.1)
 rnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
 # Bidirectional RNN (BRNN)
-brnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False, bidirectional=True)
+brnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False, bidirectional=True, dropout=0.3)
 
 # Long short-term memory (LSTM)
-lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
+lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=False, dropout=0.3)
 
 # Gated recurrent unit (GRU)
 gru = torch.nn.GRU(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
