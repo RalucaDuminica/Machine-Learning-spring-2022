@@ -4,6 +4,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 import xgboost as xgb
 from lightgbm import LGBMClassifier
+import torch
 import pandas as pd
 import warnings
 
@@ -48,17 +49,17 @@ xg_boost = xgb.XGBClassifier(colsample_bytree=0.8, learning_rate=0.05)
 # parameters for tuning : n_estimators (50, 100, 150), reg_alpha (0.01, 0.1, 1), reg_lambda (0.01, 0.1, 1)
 light_gbm = LGBMClassifier(n_estimators=50, reg_alpha=0.01, reg_lambda=0.1)
 
-#  RNN
-# rnn = RNN()
+# Recurrent neural network (RNN)
+rnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-# BRNN
-# brnn = BRNN()
+# Bidirectional RNN (BRNN)
+brnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False, bidirectional=True)
 
-# LSTM
-# lstm = LSTM()
+# Long short-term memory (LSTM)
+lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-# GRU
-# gru = GRU()
+# Gated recurrent unit (GRU)
+gru = torch.nn.GRU(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
 level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # new DataFrae to for data for next level classifier (Meta Classifier)
 
