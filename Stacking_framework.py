@@ -93,38 +93,48 @@ gru = tf.keras.models.Sequential([
 """ 
 We can also use this
 
-def brnn_model(hidden_units, input_shape):
+def rnn_model(hidden_units, input_shape):
     model = Sequential()
-    model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='tanh', return_sequences=True)))
-    model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='tanh', return_sequences=True)))
-    model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='Sigmoid')))
+    model.add(RNN(hidden_units, input_shape=input_shape, activation='tanh',  return_sequences=True))
+    model.add(RNN(hidden_units, input_shape=input_shape, activation='tanh', return_sequences=True))
+    model.add(RNN(hidden_units, input_shape=input_shape, activation='Sigmoid'))
 
     model.compile(loss='mean_squared_error', optimizer='adam')
 
     return model
 
-def lstm_model(hidden_units, input_shape):
+def brnn_model(hidden_units, input_shape):
     model = Sequential()
-    model.add(LSTM(hidden_units, input_shape=input_shape, dropout=0.3, return_sequences=True))
-    model.add(LSTM(hidden_units, input_shape=input_shape, dropout=0.3, return_sequences=True))
-    model.add(LSTM(hidden_units, input_shape=input_shape, dropout=0.3))
+    model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='tanh', recurrent_dropout=0.3, return_sequences=True)))
+    model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='tanh', recurrent_dropout=0.3, return_sequences=True)))
+    model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3,)))
 
     model.compile(loss='binary crossentropy', optimizer='rmsprop')
+
+    return model
+
+def lstm_model(hidden_units, input_shape):
+    model = Sequential()
+    model.add(LSTM(hidden_units, input_shape=input_shape,activation='tanh', recurrent_dropout=0.3, return_sequences=True))
+    model.add(LSTM(hidden_units, input_shape=input_shape,activation='tanh', recurrent_dropout=0.3, return_sequences=True))
+    model.add(LSTM(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3))
+
+   model.compile(loss='binary crossentropy', optimizer='rmsprop')
 
     return model
 
 def gru_model(hidden_units, input_shape):
     model = Sequential()
-    model.add(GRU(hidden_units, input_shape=input_shape, recurrent_dropout=0.3, return_sequences=True))
-    model.add(GRU(hidden_units, input_shape=input_shape, recurrent_dropout=0.3,return_sequences=True))
-    model.add(GRU(hidden_units, input_shape=input_shape, recurrent_dropout=0.3))
+    model.add(GRU(hidden_units, input_shape=input_shape, activation='tanh', recurrent_dropout=0.3, return_sequences=True))
+    model.add(GRU(hidden_units, input_shape=input_shape, activation='tanh', recurrent_dropout=0.3, return_sequences=True))
+    model.add(GRU(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3))
 
     model.compile(loss='binary crossentropy', optimizer='rmsprop')
 
     return model
 
 
-rnn = RNN(hidden_units=3, input_shape=(time_steps,1))
+rnn = rnn_model(hidden_units=3, input_shape=(time_steps,1))
 rnn.fit(trainX, trainY, epochs=20, batch_size=1, verbose=2)
 rnn_train_predict = rnn.predict(trainX)
 rnn_test_predict = rnn.predict(testX)
