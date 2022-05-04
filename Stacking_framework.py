@@ -7,7 +7,7 @@ from lightgbm import LGBMClassifier
 import tensorflow as tf
 from tensorflow import keras
 from keras.models import Sequential
-from keras.layers import SimpleRNN as RNN, LSTM, GRU, Dropout, Dense
+from keras.layers import SimpleRNN as RNN, LSTM, GRU, Dropout, Dense, Bidirectional
 import pandas as pd
 import warnings
 
