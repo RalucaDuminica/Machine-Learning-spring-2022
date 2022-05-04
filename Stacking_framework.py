@@ -24,6 +24,7 @@ X = X.drop(columns=['Unnamed: 0', 'Date', 'Open', 'High', 'Low', 'Close'], axis=
 for col in X.columns:
     X[col] = absolute_maximum_scale(X[col])
 
+# creating the training and test sets
 train_set_x = X[0:2700]  # first 2700 records separated for training purposes
 train_set_x.reset_index(inplace=True, drop=True)
 train_set_y = Y[0:2700]
@@ -34,6 +35,7 @@ test_set_x.reset_index(inplace=True, drop=True)
 test_set_y = Y[2700:]
 test_set_y.reset_index(inplace=True, drop=True)
 
+# splitting the datasets into n_splits folds
 kf8 = StratifiedKFold(n_splits=8, shuffle=False)  # specifying the fold size
 
 # Random forest generating class
@@ -61,8 +63,9 @@ lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=Fa
 # GRU
 gru = torch.nn.GRU(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # new
-# DataFrae to for data for next level classifier (Meta Classifier)
+# The input data for next level classifier (Meta Classifier)
+level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # label - ground truth
+
 
 # evaluation phase
 for train_index, validation_index in kf8.split(train_set_x, train_set_y):  # using train and validation set in CV
@@ -155,15 +158,17 @@ for train_index, validation_index in kf8.split(train_set_x, train_set_y):  # usi
                 level2_dataset.at[level2_dataset_ind + i, 'GRU'] = GRU_predict[i, 1]
     level2_dataset.reset_index(inplace=True, drop=True)  # reindexing the new DataFrame
 
+# splitt the data
 level2_x = level2_dataset.loc[:, level2_dataset.columns != 'label']
 level2_y = level2_dataset.loc[:, level2_dataset.columns == 'label']
 level2_y = level2_y.astype('int')
 
+# define the Meta-classifier as Logistic Regression model
 logistic_model = LogisticRegression()
 logistic_model.fit(level2_x, level2_y.values.ravel())
 print("score: ", logistic_model.score(level2_x, level2_y.values.ravel()))
 
-# final train phase
+# final train phase: retrain the level 1 classifiers
 
 # fitting the base level classifiers with training set
 random_forest.fit(train_set_x, train_set_y.values.ravel())
@@ -201,7 +206,7 @@ print("LSTM : ", lstm.score(train_set_x, train_set_y.values.ravel()))
 GRU_predict = gru.predict_proba(train_set_x)
 print("GRU : ", gru.score(train_set_x, train_set_y.values.ravel()))
 
-# using the produced prediction probabilities to form news data set for Meta classifier
+# using the produced prediction probabilities to form news data set for Meta-classifier
 for i in range(0, train_set_y.shape[0]):
     # our produced prediction probability
     level2_dataset.at[i, 'RF'] = random_forest_predict[i, 0]
