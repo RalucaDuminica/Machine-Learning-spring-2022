@@ -119,7 +119,7 @@ def lstm_model(hidden_units, input_shape):
     model.add(LSTM(hidden_units, input_shape=input_shape,activation='tanh', recurrent_dropout=0.3, return_sequences=True))
     model.add(LSTM(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3))
 
-   model.compile(loss='binary crossentropy', optimizer='rmsprop')
+    model.compile(loss='binary crossentropy', optimizer='rmsprop')
 
     return model
 
