@@ -55,44 +55,6 @@ xg_boost = xgb.XGBClassifier(colsample_bytree=0.8, learning_rate=0.05)
 light_gbm = LGBMClassifier(n_estimators=50, reg_alpha=0.01, reg_lambda=0.1)
 
 
-
-rnn = tf.keras.models.Sequential([
-    RNN(units=128, return_sequences=True),
-    RNN(units=128, return_sequences=True),
-    RNN(units=128, return_sequences=True)
-
-])
-
-brnn = tf.keras.models.Sequential([
-    RNN(units=128, return_sequences=True),
-    RNN(units=128, return_sequences=True),
-    RNN(units=128, return_sequences=True)
-
-])
-
-
-lstm = tf.keras.models.Sequential([
-    LSTM(units=128, return_sequences=True),
-    LSTM(units=128, return_sequences=True),
-    LSTM(units=128, return_sequences=True)
-
-])
-
-gru = tf.keras.models.Sequential([
-    GRU(units=128, return_sequences=True),
-    GRU(units=128, return_sequences=True),
-    GRU(units=128, return_sequences=True)
-
-])
-
-# e.g. 
-#rnn.compile(optimizer="adam", loss="mse", metrics=["accuracy"]) # each model must be compiled after is declared
-#rnn.fit(input_data, target_data, batch_size=batch_size)
-#rnn.predict(input_data)
-
-""" 
-We can also use this
-
 def rnn_model(hidden_units, input_shape):
     model = Sequential()
     model.add(RNN(hidden_units, input_shape=input_shape, activation='tanh',  return_sequences=True))
@@ -131,16 +93,13 @@ def gru_model(hidden_units, input_shape):
 
     return model
 
-
+# How to use them
+"""
 rnn = rnn_model(hidden_units=3, input_shape=(time_steps,1))
 rnn.fit(trainX, trainY, epochs=20, batch_size=1, verbose=2)
 rnn_train_predict = rnn.predict(trainX)
 rnn_test_predict = rnn.predict(testX)
-
-
 """
-
-
 
 # The input data for next level classifier (Meta Classifier)
 level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # label - ground truth
