@@ -83,6 +83,12 @@ gru = tf.keras.models.Sequential([
     GRU(units=128, return_sequences=True)
 
 ])
+# e.g. 
+#rnn.compile(optimizer="adam", loss="mse", metrics=["accuracy"])
+#rnn.fit(input_data, target_data, batch_size=batch_size)
+
+
+
 # The input data for next level classifier (Meta Classifier)
 level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # label - ground truth
 
