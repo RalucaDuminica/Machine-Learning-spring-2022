@@ -4,7 +4,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 import xgboost as xgb
 from lightgbm import LGBMClassifier
-import torch
+import tensorflow as tf
+from tensorflow import keras
+from keras.layers import SimpleRNN as RNN, LSTM, GRU, Dropout, Dense
 import pandas as pd
 import warnings
 
@@ -51,18 +53,36 @@ xg_boost = xgb.XGBClassifier(colsample_bytree=0.8, learning_rate=0.05)
 # parameters for tuning : n_estimators (50, 100, 150), reg_alpha (0.01, 0.1, 1), reg_lambda (0.01, 0.1, 1)
 light_gbm = LGBMClassifier(n_estimators=50, reg_alpha=0.01, reg_lambda=0.1)
 
-#  RNN
-rnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-# BRNN
-brnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False, bidirectional=True)
 
-# LSTM
-lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
+rnn = tf.keras.models.Sequential([
+    RNN(units=128, return_sequences=True),
+    RNN(units=128, return_sequences=True),
+    RNN(units=128, return_sequences=True)
 
-# GRU
-gru = torch.nn.GRU(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
+])
 
+brnn = tf.keras.models.Sequential([
+    RNN(units=128, return_sequences=True),
+    RNN(units=128, return_sequences=True),
+    RNN(units=128, return_sequences=True)
+
+])
+
+
+lstm = tf.keras.models.Sequential([
+    LSTM(units=128, return_sequences=True),
+    LSTM(units=128, return_sequences=True),
+    LSTM(units=128, return_sequences=True)
+
+])
+
+gru = tf.keras.models.Sequential([
+    GRU(units=128, return_sequences=True),
+    GRU(units=128, return_sequences=True),
+    GRU(units=128, return_sequences=True)
+
+])
 # The input data for next level classifier (Meta Classifier)
 level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # label - ground truth
 
