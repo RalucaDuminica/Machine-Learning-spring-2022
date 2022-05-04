@@ -49,39 +49,41 @@ xg_boost = xgb.XGBClassifier(colsample_bytree=0.8, learning_rate=0.05)
 # parameters for tuning : n_estimators (50, 100, 150), reg_alpha (0.01, 0.1, 1), reg_lambda (0.01, 0.1, 1)
 light_gbm = LGBMClassifier(n_estimators=50, reg_alpha=0.01, reg_lambda=0.1)
 
-# Recurrent neural network (RNN)
+#  RNN
 rnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-# Bidirectional RNN (BRNN)
-brnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False, bidirectional=True, dropout=0.3)
+# BRNN
+brnn = torch.nn.RNN(input_size=1, hidden_size=128, num_layers=3, batch_first=False, bidirectional=True)
 
-# Long short-term memory (LSTM)
-lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=False, dropout=0.3)
+# LSTM
+lstm = torch.nn.LSTM(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-# Gated recurrent unit (GRU)
+# GRU
 gru = torch.nn.GRU(input_size=1, hidden_size=128, num_layers=3, batch_first=False)
 
-level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # new DataFrae to for data for next level classifier (Meta Classifier)
+level2_dataset = pd.DataFrame(columns=['RF', 'ERT', 'XGB', 'LGBM', 'RNN', 'BRNN', 'LSTM', 'GRU', 'label'])  # new
+# DataFrae to for data for next level classifier (Meta Classifier)
 
-for train_index, validation_index in kf8.split(train_set_x, train_set_y, ):  # using train and validation set in CV
+# evaluation phase
+for train_index, validation_index in kf8.split(train_set_x, train_set_y):  # using train and validation set in CV
     x_train = train_set_x.iloc[train_index]  # training set , provided by CV
     y_train = train_set_y.iloc[train_index]
 
     x_valid = train_set_x.iloc[validation_index]  # validation set provided by CV
     y_valid = train_set_y.loc[validation_index]
 
-# fitting the base level classifiers with training set
+    # fitting the base level classifiers with training set
     random_forest.fit(x_train, y_train.values.ravel())
     extreme_random_tree.fit(x_train, y_train.values.ravel())
     xg_boost.fit(x_train, y_train.values.ravel())
     light_gbm.fit(x_train, y_train.values.ravel())
 
-    # rnn.fit(x_train, y_train.values.ravel())
-    # brnn.fit(x_train, y_train.values.ravel())
-    # lstm.fit(x_train, y_train.values.ravel())
-    # gru.fit(x_train, y_train.values.ravel())
+    rnn.fit(x_train, y_train.values.ravel())
+    brnn.fit(x_train, y_train.values.ravel())
+    lstm.fit(x_train, y_train.values.ravel())
+    gru.fit(x_train, y_train.values.ravel())
 
-# extracting the prediction probability on validation set
+    # extracting the prediction probability on validation set
     random_forest_predict = random_forest.predict_proba(x_valid)
     print("RF : ", random_forest.score(x_valid, y_valid.values.ravel()))
     extreme_random_tree_predict = extreme_random_tree.predict_proba(x_valid)
@@ -91,19 +93,19 @@ for train_index, validation_index in kf8.split(train_set_x, train_set_y, ):  # u
     light_gbm_predict = light_gbm.predict_proba(x_valid)
     print("LightGBM : ", light_gbm.score(x_valid, y_valid.values.ravel()))
 
-    # RNN_predict = rnn.predict_proba(x_valid)
-    # print("RNN : ", rnn.score(x_valid, y_valid.values.ravel()))
+    RNN_predict = rnn.predict_proba(x_valid)
+    print("RNN : ", rnn.score(x_valid, y_valid.values.ravel()))
 
-    # BRNN_predict = brnn.predict_proba(x_valid)
-    # print("BRNN : ", brnn.score(x_valid, y_valid.values.ravel()))
+    BRNN_predict = brnn.predict_proba(x_valid)
+    print("BRNN : ", brnn.score(x_valid, y_valid.values.ravel()))
 
-    # LSTM_predict = lstm.predict_proba(x_valid)
-    # print("LSTM : ", lstm.score(x_valid, y_valid.values.ravel()))
+    LSTM_predict = lstm.predict_proba(x_valid)
+    print("LSTM : ", lstm.score(x_valid, y_valid.values.ravel()))
 
-    # GRU_predict = gru.predict_proba(x_valid)
-    # print("GRU : ", gru.score(x_valid, y_valid.values.ravel()))
+    GRU_predict = gru.predict_proba(x_valid)
+    print("GRU : ", gru.score(x_valid, y_valid.values.ravel()))
 
-# using the produced prediction probabilities to form news data set for Meta classifier
+    # using the produced prediction probabilities to form news data set for Meta classifier
     for i in range(0, y_valid.shape[0]):
         if level2_dataset.empty:  # check if the new dataset is empty or not
             if y_valid.iloc[i, 0] == 0:  # Check if true label is 0 or not, if it is zero we use the first column of
@@ -113,20 +115,20 @@ for train_index, validation_index in kf8.split(train_set_x, train_set_y, ):  # u
                 level2_dataset.at[i, 'XGB'] = xg_boost_predict[i, 0]
                 level2_dataset.at[i, 'LGBM'] = light_gbm_predict[i, 0]
                 level2_dataset.at[i, 'label'] = y_valid.iloc[i, 0]
-                # level2_dataset.at[i, 'RNN'] = RNN_predict[i, 0]
-                # level2_dataset.at[i, 'BRNN'] = BRNN_predict[i, 0]
-                # level2_dataset.at[i, 'LSTM'] = LSTM_predict[i, 0]
-                # level2_dataset.at[i, 'GRU'] = GRU_predict[i, 0]
+                level2_dataset.at[i, 'RNN'] = RNN_predict[i, 0]
+                level2_dataset.at[i, 'BRNN'] = BRNN_predict[i, 0]
+                level2_dataset.at[i, 'LSTM'] = LSTM_predict[i, 0]
+                level2_dataset.at[i, 'GRU'] = GRU_predict[i, 0]
             else:
                 level2_dataset.at[i, 'RF'] = random_forest_predict[i, 1]
                 level2_dataset.at[i, 'ERT'] = extreme_random_tree_predict[i, 1]
                 level2_dataset.at[i, 'XGB'] = xg_boost_predict[i, 1]
                 level2_dataset.at[i, 'LGBM'] = light_gbm_predict[i, 1]
                 level2_dataset.at[i, 'label'] = y_valid.iloc[i, 0]
-                # level2_dataset.at[i, 'RNN'] = RNN_predict[i, 1]
-                # level2_dataset.at[i, 'BRNN'] = BRNN_predict[i, 1]
-                # level2_dataset.at[i, 'LSTM'] = LSTM_predict[i, 1]
-                # level2_dataset.at[i, 'GRU'] = GRU_predict[i, 1]
+                level2_dataset.at[i, 'RNN'] = RNN_predict[i, 1]
+                level2_dataset.at[i, 'BRNN'] = BRNN_predict[i, 1]
+                level2_dataset.at[i, 'LSTM'] = LSTM_predict[i, 1]
+                level2_dataset.at[i, 'GRU'] = GRU_predict[i, 1]
 
         else:  # if the new DataFrame is not empty we should find the last index to use attaching new data
             level2_dataset.reset_index(inplace=True, drop=True)
@@ -137,20 +139,20 @@ for train_index, validation_index in kf8.split(train_set_x, train_set_y, ):  # u
                 level2_dataset.at[level2_dataset_ind + i, 'XGB'] = xg_boost_predict[i, 0]
                 level2_dataset.at[level2_dataset_ind + i, 'LGBM'] = light_gbm_predict[i, 0]
                 level2_dataset.at[level2_dataset_ind + i, 'label'] = y_valid.iloc[i, 0]
-                # level2_dataset.at[level2_dataset_ind + i, 'RNN'] = RNN_predict[i, 0]
-                # level2_dataset.at[level2_dataset_ind + i, 'BRNN'] = BRNN_predict[i, 0]
-                # level2_dataset.at[level2_dataset_ind + i, 'LSTM'] = LSTM_predict[i, 0]
-                # level2_dataset.at[level2_dataset_ind + i, 'GRU'] = GRU_predict[i, 0]
+                level2_dataset.at[level2_dataset_ind + i, 'RNN'] = RNN_predict[i, 0]
+                level2_dataset.at[level2_dataset_ind + i, 'BRNN'] = BRNN_predict[i, 0]
+                level2_dataset.at[level2_dataset_ind + i, 'LSTM'] = LSTM_predict[i, 0]
+                level2_dataset.at[level2_dataset_ind + i, 'GRU'] = GRU_predict[i, 0]
             else:
                 level2_dataset.at[level2_dataset_ind + i, 'RF'] = random_forest_predict[i, 1]
                 level2_dataset.at[level2_dataset_ind + i, 'ERT'] = extreme_random_tree_predict[i, 1]
                 level2_dataset.at[level2_dataset_ind + i, 'XGB'] = xg_boost_predict[i, 1]
                 level2_dataset.at[level2_dataset_ind + i, 'LGBM'] = light_gbm_predict[i, 1]
                 level2_dataset.at[level2_dataset_ind + i, 'label'] = y_valid.iloc[i, 0]
-                # level2_dataset.at[level2_dataset_ind + i, 'RNN'] = RNN_predict[i, 1]
-                # level2_dataset.at[level2_dataset_ind + i, 'BRNN'] = BRNN_predict[i, 1]
-                # level2_dataset.at[level2_dataset_ind + i, 'LSTM'] = LSTM_predict[i, 1]
-                # level2_dataset.at[level2_dataset_ind + i, 'GRU'] = GRU_predict[i, 1]
+                level2_dataset.at[level2_dataset_ind + i, 'RNN'] = RNN_predict[i, 1]
+                level2_dataset.at[level2_dataset_ind + i, 'BRNN'] = BRNN_predict[i, 1]
+                level2_dataset.at[level2_dataset_ind + i, 'LSTM'] = LSTM_predict[i, 1]
+                level2_dataset.at[level2_dataset_ind + i, 'GRU'] = GRU_predict[i, 1]
     level2_dataset.reset_index(inplace=True, drop=True)  # reindexing the new DataFrame
 
 level2_x = level2_dataset.loc[:, level2_dataset.columns != 'label']
@@ -160,6 +162,106 @@ level2_y = level2_y.astype('int')
 logistic_model = LogisticRegression()
 logistic_model.fit(level2_x, level2_y.values.ravel())
 print("score: ", logistic_model.score(level2_x, level2_y.values.ravel()))
+
+# final train phase
+
+# fitting the base level classifiers with training set
+random_forest.fit(train_set_x, train_set_y.values.ravel())
+extreme_random_tree.fit(train_set_x, train_set_y.values.ravel())
+xg_boost.fit(train_set_x, train_set_y.values.ravel())
+light_gbm.fit(train_set_x, train_set_y.values.ravel())
+
+rnn.fit(train_set_x, train_set_y.values.ravel())
+brnn.fit(train_set_x, train_set_y.values.ravel())
+lstm.fit(train_set_x, train_set_y.values.ravel())
+gru.fit(train_set_x, train_set_y.values.ravel())
+
+# extracting the prediction probability on validation set
+random_forest_predict = random_forest.predict_proba(train_set_x)
+print("RF : ", random_forest.score(train_set_x, train_set_y.values.ravel()))
+
+extreme_random_tree_predict = extreme_random_tree.predict_proba(train_set_x)
+print("ERT : ", extreme_random_tree.score(train_set_x, train_set_y.values.ravel()))
+
+xg_boost_predict = xg_boost.predict_proba(train_set_x)
+print("XGBoost : ", xg_boost.score(train_set_x, train_set_y.values.ravel()))
+
+light_gbm_predict = light_gbm.predict_proba(train_set_x)
+print("LightGBM : ", light_gbm.score(train_set_x, train_set_y.values.ravel()))
+
+RNN_predict = rnn.predict_proba(train_set_x)
+print("RNN : ", rnn.score(train_set_x, train_set_y.values.ravel()))
+
+BRNN_predict = brnn.predict_proba(train_set_x)
+print("BRNN : ", brnn.score(train_set_x, train_set_y.values.ravel()))
+
+LSTM_predict = lstm.predict_proba(train_set_x)
+print("LSTM : ", lstm.score(train_set_x, train_set_y.values.ravel()))
+
+GRU_predict = gru.predict_proba(train_set_x)
+print("GRU : ", gru.score(train_set_x, train_set_y.values.ravel()))
+
+# using the produced prediction probabilities to form news data set for Meta classifier
+for i in range(0, train_set_y.shape[0]):
+    # our produced prediction probability
+    level2_dataset.at[i, 'RF'] = random_forest_predict[i, 0]
+    level2_dataset.at[i, 'ERT'] = extreme_random_tree_predict[i, 0]
+    level2_dataset.at[i, 'XGB'] = xg_boost_predict[i, 0]
+    level2_dataset.at[i, 'LGBM'] = light_gbm_predict[i, 0]
+    level2_dataset.at[i, 'label'] = train_set_y.iloc[i, 0]
+    level2_dataset.at[i, 'RNN'] = RNN_predict[i, 0]
+    level2_dataset.at[i, 'BRNN'] = BRNN_predict[i, 0]
+    level2_dataset.at[i, 'LSTM'] = LSTM_predict[i, 0]
+    level2_dataset.at[i, 'GRU'] = GRU_predict[i, 0]
+
+level2_dataset.reset_index(inplace=True, drop=True)  # reindexing the new DataFrame
+
+level2_x = level2_dataset.loc[:, level2_dataset.columns != 'label']
+level2_y = level2_dataset.loc[:, level2_dataset.columns == 'label']
+level2_y = level2_y.astype('int')
+
+logistic_model = LogisticRegression()
+logistic_model.fit(level2_x, level2_y.values.ravel())
+
+# final Test Phase
+
+random_forest_predict = random_forest.predict_proba(test_set_x)
+
+extreme_random_tree_predict = extreme_random_tree.predict_proba(test_set_x)
+
+xg_boost_predict = xg_boost.predict_proba(test_set_x)
+
+light_gbm_predict = light_gbm.predict_proba(test_set_x)
+
+RNN_predict = rnn.predict_proba(test_set_x)
+
+BRNN_predict = brnn.predict_proba(test_set_x)
+
+LSTM_predict = lstm.predict_proba(test_set_x)
+
+GRU_predict = gru.predict_proba(test_set_x)
+
+for i in range(0, test_set_y.shape[0]):
+    # our produced prediction probability
+    level2_dataset.at[i, 'RF'] = random_forest_predict[i, 0]
+    level2_dataset.at[i, 'ERT'] = extreme_random_tree_predict[i, 0]
+    level2_dataset.at[i, 'XGB'] = xg_boost_predict[i, 0]
+    level2_dataset.at[i, 'LGBM'] = light_gbm_predict[i, 0]
+    level2_dataset.at[i, 'label'] = test_set_y.iloc[i, 0]
+    level2_dataset.at[i, 'RNN'] = RNN_predict[i, 0]
+    level2_dataset.at[i, 'BRNN'] = BRNN_predict[i, 0]
+    level2_dataset.at[i, 'LSTM'] = LSTM_predict[i, 0]
+    level2_dataset.at[i, 'GRU'] = GRU_predict[i, 0]
+
+level2_dataset.reset_index(inplace=True, drop=True)
+
+level2_x = level2_dataset.loc[:, level2_dataset.columns != 'label']
+level2_y = level2_dataset.loc[:, level2_dataset.columns == 'label']
+level2_y = level2_y.astype('int')
+
+score = logistic_model.score(level2_x, level2_y)
+
+print("Final Score of Frame work : ", score)
 
 """pd.DataFrame(xg_boost.feature_importances_.reshape(1, -1), columns=X.columns)
 y_pred = xg_boost.predict(X)
