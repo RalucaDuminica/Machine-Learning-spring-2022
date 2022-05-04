@@ -98,9 +98,7 @@ def rnn_model(hidden_units, input_shape):
     model.add(RNN(hidden_units, input_shape=input_shape, activation='tanh',  return_sequences=True))
     model.add(RNN(hidden_units, input_shape=input_shape, activation='tanh', return_sequences=True))
     model.add(RNN(hidden_units, input_shape=input_shape, activation='Sigmoid'))
-
-    model.compile(loss='mean_squared_error', optimizer='adam')
-
+    model.compile(loss='binary_crossentropy', optimizer='rmsprop')
     return model
 
 def brnn_model(hidden_units, input_shape):
@@ -109,7 +107,7 @@ def brnn_model(hidden_units, input_shape):
     model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='tanh', recurrent_dropout=0.3, return_sequences=True)))
     model.add(Bidirectional(RNN(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3,)))
 
-    model.compile(loss='binary crossentropy', optimizer='rmsprop')
+    model.compile(loss='binary_crossentropy', optimizer='rmsprop')
 
     return model
 
@@ -119,7 +117,7 @@ def lstm_model(hidden_units, input_shape):
     model.add(LSTM(hidden_units, input_shape=input_shape,activation='tanh', recurrent_dropout=0.3, return_sequences=True))
     model.add(LSTM(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3))
 
-    model.compile(loss='binary crossentropy', optimizer='rmsprop')
+    model.compile(loss='binary_crossentropy', optimizer='rmsprop')
 
     return model
 
@@ -129,7 +127,7 @@ def gru_model(hidden_units, input_shape):
     model.add(GRU(hidden_units, input_shape=input_shape, activation='tanh', recurrent_dropout=0.3, return_sequences=True))
     model.add(GRU(hidden_units, input_shape=input_shape, activation='Sigmoid', recurrent_dropout=0.3))
 
-    model.compile(loss='binary crossentropy', optimizer='rmsprop')
+    model.compile(loss='binary_crossentropy', optimizer='rmsprop')
 
     return model
 
