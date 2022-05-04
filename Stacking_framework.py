@@ -83,9 +83,11 @@ gru = tf.keras.models.Sequential([
     GRU(units=128, return_sequences=True)
 
 ])
+
 # e.g. 
-#rnn.compile(optimizer="adam", loss="mse", metrics=["accuracy"])
+#rnn.compile(optimizer="adam", loss="mse", metrics=["accuracy"]) # each model must be compiled after is declared
 #rnn.fit(input_data, target_data, batch_size=batch_size)
+#rnn.predict(input_data)
 
 
 
