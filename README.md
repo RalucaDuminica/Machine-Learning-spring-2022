@@ -1,5 +1,7 @@
 # Machine-Learning-spring-2022
 
+implemented By Soheil Abadifard and Maria Raluca Duminica
+
 ### this Implementation used pseudo-codes of An improved Stacking framework for stock index prediction by leveraging tree-based ensemble models and deep learning algorithms
  
 All the data is gathered from yahoo finance and federal reserve websites.
